@@ -1,8 +1,8 @@
 {
-    "name": "OmniPro API",
+    "name": "Picking API",
     "license": "Private",
     "type": "project",
-    "description": "The API of OmniPro application.",
+    "description": "The API for Picking Project.",
     "autoload": {
         "psr-4": { "": "src/" },
         "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
