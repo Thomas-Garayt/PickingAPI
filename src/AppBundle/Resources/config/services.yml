@@ -1,0 +1,25 @@
+services:
+    ### Business Services ###
+
+    # Naming convention for Business Services is : {Name of the Bundle}.business.{Name of the Service class}
+    # e.g. "app.business.userWeeklyHours" where "app" is the Name of the Bundle and "userWeeklyHours" is the Name of the Service class.
+
+    # User
+    app.business.userWeeklyHours:
+        class: AppBundle\Services\Business\User\UserWeeklyHoursService
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        public: true
+    app.business.userFoodAllowance:
+        class: AppBundle\Services\Business\User\UserFoodAllowanceService
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        public: true
+    app.business.userCommuting:
+        class: AppBundle\Services\Business\User\UserCommutingService
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        public: true
+        
+    app.fileSystem:
+        class: AppBundle\Services\FileSystemService
+        public: true
+
+

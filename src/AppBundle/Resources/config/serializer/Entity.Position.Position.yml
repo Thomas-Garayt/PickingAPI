@@ -1,0 +1,13 @@
+AppBundle\Entity\Position\Position:
+    exclusion_policy: none
+    properties:
+        name:
+            groups: ['position']
+        lane:
+            groups: ['position']
+        landmark:
+            groups: ['position']
+        shelf:
+            groups: ['position']
+        section:
+            groups: ['position']

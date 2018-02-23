@@ -1,0 +1,7 @@
+auth:
+    error:
+        invalidCredentials: Identifiant ou Mot de Passe Incorrect
+
+user:
+    error:
+        notFound: Utilisateur Introuvable

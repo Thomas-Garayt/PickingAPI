@@ -1,0 +1,38 @@
+body {
+    margin-top: 0;
+    color: rgba(0, 0, 0, 0.65)!important;
+}
+
+#swagger-ui.api-platform .info .title {
+    color: #faae31;
+}
+
+.swagger-ui .info .title small {
+    background-color: #1e2942;
+}
+
+#swagger-ui.api-platform .information-container.wrapper {
+    margin-bottom: 0;
+    border-bottom: none;
+    background: none;
+    padding: 10px;
+}
+
+.swagger-ui .scheme-container {
+    margin-top: -107px;
+}
+
+.models {
+    display: none;
+}
+
+.copyright,
+.copyright a {
+    font-family: Open Sans,sans-serif !important;
+    color: #b6b6b6;
+}
+.copyright {
+    margin: 20px;
+    text-align: center;
+    
+}

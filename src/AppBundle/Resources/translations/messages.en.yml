@@ -1,0 +1,7 @@
+auth:
+    error:
+        invalidCredentials: Invalid Credentials
+
+user:
+    error:
+        notFound: User Not Found

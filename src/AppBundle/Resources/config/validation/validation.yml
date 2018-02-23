@@ -1,0 +1,10 @@
+AppBundle\Entity\Credentials:
+    properties:
+        login:
+            - Type: string
+            - NotBlank:
+                message: credentials.login.not_blank
+        password:
+            - Type: string
+            - NotBlank:
+                message: credentials.password.not_blank

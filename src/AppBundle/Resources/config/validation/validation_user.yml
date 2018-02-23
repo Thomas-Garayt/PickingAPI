@@ -1,0 +1,41 @@
+AppBundle\Entity\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields: email
+            message: user.email.already_use
+    properties:
+        firstname:
+            - Type: string
+            - NotBlank:
+                message: user.firstname.not_blank
+        lastname:
+            - Type: string
+            - NotBlank:
+                message: user.lastname.not_blank
+        email:
+            - Type: string
+            - NotBlank:
+                message: user.lastname.not_blank
+            - Email:
+                message: user.email.not_valid
+        username:
+            - Type: string
+            - NotBlank:
+                message: user.username.not_blank
+            - Regex:
+                pattern: '/^[a-zA-Z0-9]*$/'
+                message: user.username.onlychar
+        plainPassword:
+            - Type: string
+            - NotBlank: { groups: [New, FullUpdate] }
+            - Length:
+                min: 4
+                max: 50
+                minMessage: user.password.min
+                maxMessage: user.password.max
+
+        # Personnal Data
+        identifier:
+            - Type: string
+            - NotBlank:
+                message: user.identifier.not_blank

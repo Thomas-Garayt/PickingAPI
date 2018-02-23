@@ -1,0 +1,17 @@
+app:
+    resource: "@AppBundle/Controller/DefaultController.php"
+    type:     annotation
+
+nelmio-api-doc:
+    resource: "@NelmioApiDocBundle/Resources/config/routing/swaggerui.xml"
+    prefix:   /documentation
+
+# User
+users:
+    type:     rest
+    resource: AppBundle\Controller\UserController
+
+# Position
+business:
+    type:     rest
+    resource: AppBundle\Controller\Position\PositionController
