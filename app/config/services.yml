@@ -50,13 +50,3 @@ services:
         class: AppBundle\Security\SecurityContext
         arguments: ["@security.token_storage","@translator"]
         public: true
-
-    # Event Listener
-    before_request_listener:
-        class: AppBundle\EventListener\BeforeRequestListener
-        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
-        tags:
-            -
-                name: kernel.event_listener
-                event: kernel.controller
-                method: onKernelController

@@ -123,7 +123,7 @@ class AuthTokenController extends ControllerBase {
         $authToken->setValue(base64_encode(random_bytes(50)));
         $authToken->setCreatedAt(new \DateTime('now'));
         $authToken->setUser($user);
-        $authToken->setSecurityContext($this->get('security_context')->makeSecurityContext($user));
+        //$authToken->setSecurityContext($this->get('security_context')->makeSecurityContext($user));
 
         return $authToken;
     }

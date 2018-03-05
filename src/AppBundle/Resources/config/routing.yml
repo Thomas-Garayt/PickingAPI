@@ -6,12 +6,17 @@ nelmio-api-doc:
     resource: "@NelmioApiDocBundle/Resources/config/routing/swaggerui.xml"
     prefix:   /documentation
 
+# Auth-tokens
+auth-tokens:
+    type:     rest
+    resource: AppBundle\Controller\AuthTokenController
+
 # User
 users:
     type:     rest
     resource: AppBundle\Controller\UserController
 
 # Position
-business:
+position:
     type:     rest
     resource: AppBundle\Controller\Position\PositionController

@@ -20,8 +20,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 // Entity
 use AppBundle\Entity\User;
 use AppBundle\Entity\User\UserChangePassword;
+
+// Form
 use AppBundle\Form\Type\UserType;
-use AppBundle\Form\Type\User\UserChangePasswordType;
 
 class UserController extends ControllerBase {
 
@@ -111,87 +112,6 @@ class UserController extends ControllerBase {
             $em->persist($user);
             $em->flush();
             return $user;
-        } else {
-            return $form;
-        }
-    }
-
-    /**
-     * @Operation(
-     *     tags={"User"},
-     *     summary="Change the password of a user.",
-     *     @SWG\Parameter(
-     *         name="body", in="body", required=true,
-     *         @Model(type=UserChangePasswordType::class)
-     *     ),
-     *     @SWG\Response(
-     *         response="204",
-     *         description="No Content"
-     *     ),
-     *     @SWG\Response(
-     *         response="400",
-     *         description="Bad Request"
-     *     )
-     * )
-     *
-     * @Rest\View(statusCode=Response::HTTP_NO_CONTENT)
-     * @Rest\Patch("/users/{id}/updatePassword")
-     */
-    public function updatePasswordUserAction(Request $request) {
-        $user = $this->getDoctrine()->getManager()
-                ->getRepository(User::class)
-                ->find($request->get('id'));
-
-        if (empty($user)) {
-            throw $this->getUserNotFoundException();
-        }
-
-        $userChangePassword = new UserChangePassword();
-        $form = $this->createForm(UserChangePasswordType::class, $userChangePassword, ['validation_groups' => ['Default', 'New']]);
-
-        $form->submit($request->request->all());
-
-        if ($form->isValid()) {
-
-            $currentUser = $this->getUser();
-
-            /* if the user is the current user */
-            if ($currentUser->getId() == $user->getId()) {
-                $oldPassword = $userChangePassword->getOldPassword();
-                $newPassword = $userChangePassword->getNewPassword();
-                $repeatNewPassword = $userChangePassword->getRepeatNewPassword();
-
-                $encoder = $this->get('security.password_encoder');
-
-                if (!$encoder->isPasswordValid($user, $oldPassword)) {
-                    throw new BadRequestHttpException($this->trans('user.error.badOldPassword'));
-                }
-
-                if ($newPassword !== $repeatNewPassword) {
-                    throw $this->getUserNotFoundException();
-                }
-
-                $encodedPassword = $encoder->encodePassword($user, $newPassword);
-                $user->setPassword($encodedPassword);
-            }
-            /* if the user is an admin */ else {
-                $newPassword = $userChangePassword->getNewPassword();
-                $repeatNewPassword = $userChangePassword->getRepeatNewPassword();
-
-                $encoder = $this->get('security.password_encoder');
-
-                if ($newPassword !== $repeatNewPassword) {
-                    throw $this->getUserNotFoundException();
-                }
-
-                $encodedPassword = $encoder->encodePassword($user, $newPassword);
-                $user->setPassword($encodedPassword);
-            }
-
-            $em = $this->getDoctrine()->getManager();
-
-            $em->persist($user);
-            $em->flush();
         } else {
             return $form;
         }

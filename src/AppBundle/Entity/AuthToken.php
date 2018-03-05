@@ -35,18 +35,6 @@ class AuthToken
     */
     protected $user;
 
-    /**
-    * @ORM\Column(type="text")
-    */
-    protected $serializedSecurityContext;
-
-    /**
-     * The security context array not serialized.
-     * @return array
-     */
-    protected $securityContext;
-
-
     public function getId()
     {
         return $this->id;
@@ -85,19 +73,6 @@ class AuthToken
     public function setUser(User $user)
     {
         $this->user = $user;
-    }
-
-    public function getSecurityContext() {
-        if(!$this->securityContext){
-            $this->securityContext = (array) json_decode($this->serializedSecurityContext);
-        }
-        return $this->securityContext;
-    }
-
-    public function setSecurityContext($securityContext) {
-        $this->securityContext = $securityContext;
-        $this->serializedSecurityContext = json_encode($securityContext);
-        return $this;
     }
 
 }

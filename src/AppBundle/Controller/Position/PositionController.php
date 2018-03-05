@@ -19,6 +19,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Entity
 
+// Form
+use AppBundle\Form\Type\Position\PositionType;
+
 class PositionController extends ControllerBase {
 
     /**
@@ -36,7 +39,7 @@ class PositionController extends ControllerBase {
      * @Rest\Get("/positions");
      */
     public function getPositionsAction(Request $request) {
-        
+
         $em = $this->getDoctrine()->getManager();
         $positions = $em->getRepository(Position::class)->findAll();
 
