@@ -21,10 +21,9 @@ class Notification extends EntityBase {
     private $type;
 
     /**
-    * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product\ProductPosition", mappedBy="id")
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product\ProductPosition")
     */
     private $productPosition;
-
 
     /**
      * Get the value of Type
