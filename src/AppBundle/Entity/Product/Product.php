@@ -17,6 +17,12 @@ use AppBundle\Entity\EntityBase;
 class Product extends EntityBase {
 
     /**
+     * @ORM\Column(type="string", length=13, unique=true)
+     */
+    private $ean13;
+
+
+    /**
     * @ORM\Column(type="string")
     */
     private $description;
