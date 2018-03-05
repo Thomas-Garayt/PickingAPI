@@ -27,6 +27,11 @@ class Product extends EntityBase {
     private $price;
 
     /**
+     * @ORM\Column(type="decimal", scale=2)
+     */
+    private $weight;
+
+    /**
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Order\OrderProduct", mappedBy="product")
     */
     private $orders;
