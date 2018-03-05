@@ -5,3 +5,15 @@ auth:
 user:
     error:
         notFound: User Not Found
+
+position:
+    error:
+        notFound: Order Not Found
+
+order:
+    error:
+        notFound: Order Not Found
+
+order_product:
+    error:
+        notFound: Order Products Not Found
