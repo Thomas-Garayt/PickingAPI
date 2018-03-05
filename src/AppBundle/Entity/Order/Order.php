@@ -37,6 +37,12 @@ class Order extends EntityBase {
     private $preparations;
 
     /**
+    * @ORM\Column(type="string")
+    */
+    private $status;
+    // Enum
+
+    /**
      * Get the value of Order Number
      *
      * @return mixed
@@ -130,6 +136,27 @@ class Order extends EntityBase {
         $this->preparations = $preparations;
 
         return $this;
+    }
+
+
+    /**
+     * Get the value of Status
+     *
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        if (OrderStatus::isValidValue($status, false)) {
+            $this->status = $status;
+            return $this;
+        } else {
+            throw new \InvalidArgumentException('setStatus only accept arguments of type OrderStatus');
+        }
     }
 
 }

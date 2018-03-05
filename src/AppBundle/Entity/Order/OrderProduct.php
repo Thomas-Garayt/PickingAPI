@@ -31,6 +31,16 @@ class OrderProduct extends EntityBase {
     */
     private $quantity;
 
+    /**
+    * Quantity recovered by the preparator
+    * @ORM\Column(type="integer")
+    */
+    private $count;
+
+    /**
+    * @ORM\Column(type="boolean")
+    */
+    private $uncomplete;
 
     /**
      * Get the value of Order
@@ -100,6 +110,56 @@ class OrderProduct extends EntityBase {
     public function setQuantity($quantity)
     {
         $this->quantity = $quantity;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of Quantity recovered by the preparator
+     *
+     * @return mixed
+     */
+    public function getCount()
+    {
+        return $this->count;
+    }
+
+    /**
+     * Set the value of Quantity recovered by the preparator
+     *
+     * @param mixed count
+     *
+     * @return self
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of Uncomplete
+     *
+     * @return mixed
+     */
+    public function getUncomplete()
+    {
+        return $this->uncomplete;
+    }
+
+    /**
+     * Set the value of Uncomplete
+     *
+     * @param mixed uncomplete
+     *
+     * @return self
+     */
+    public function setUncomplete($uncomplete)
+    {
+        $this->uncomplete = $uncomplete;
 
         return $this;
     }
