@@ -1,0 +1,13 @@
+AppBundle\Entity\User\UserCaracteristic:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['user-caracteristic','user']
+        user:
+            groups: ['user-caracteristic']
+        stamina:
+            groups: ['user-caracteristic','user']
+        staminaCoefficient:
+            groups: ['user-caracteristic','user']
+        strength:
+            groups: ['user-caracteristic','user']

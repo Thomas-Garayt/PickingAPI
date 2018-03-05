@@ -21,7 +21,6 @@ class Product extends EntityBase {
      */
     private $ean13;
 
-
     /**
     * @ORM\Column(type="string")
     */
@@ -46,8 +45,6 @@ class Product extends EntityBase {
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product\ProductPosition", mappedBy="product")
     */
     private $positions;
-
-
 
     /**
      * Get the value of Description

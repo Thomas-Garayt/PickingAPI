@@ -1,0 +1,9 @@
+AppBundle\Entity\Notification\Notification:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['notification']
+        type:
+            groups: ['notification']
+        productPosition:
+            groups: ['notification']

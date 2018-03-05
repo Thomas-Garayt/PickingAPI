@@ -1,0 +1,17 @@
+AppBundle\Entity\User:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['user']
+        identifier:
+            groups: ['user']
+        firstname:
+            groups: ['user']
+        lastname:
+            groups: ['user']
+        email:
+            groups: ['user']
+        username:
+            groups: ['user']
+        caracteristic:
+            groups: ['user']

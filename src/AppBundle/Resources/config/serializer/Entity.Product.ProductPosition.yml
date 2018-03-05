@@ -1,0 +1,11 @@
+AppBundle\Entity\Product\ProductPosition:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['product-position']
+        position:
+            groups: ['product-position']
+        product:
+            groups: ['product-position']
+        quantity:
+            groups: ['product-position']

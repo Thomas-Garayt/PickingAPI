@@ -1,0 +1,15 @@
+AppBundle\Entity\Order\OrderProduct:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['order-product','order']
+        order:
+            groups: ['order-product']
+        product:
+            groups: ['order-product','order']
+        quantity:
+            groups: ['order-product','order']
+        count:
+            groups: ['order-product','order']
+        uncomplete:
+            groups: ['order-product','order']

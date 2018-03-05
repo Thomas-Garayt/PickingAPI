@@ -1,0 +1,9 @@
+AppBundle\Entity\Preparation\PreparationOrder:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['preparation-order','preparation','order']
+        order:
+            groups: ['preparation-order','preparation','order']
+        preparation:
+            groups: ['preparation-order','preparation','order']

@@ -1,0 +1,13 @@
+AppBundle\Entity\Preparation\Preparation:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['preparation']
+        user:
+            groups: ['preparation']
+        startTime:
+            groups: ['preparation']
+        endTime:
+            groups: ['preparation']
+        orders:
+            groups: ['preparation']

@@ -1,0 +1,17 @@
+AppBundle\Entity\Product\Product:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['product']
+        ean13:
+            groups: ['product']
+        description:
+            groups: ['product']
+        price:
+            groups: ['product']
+        weight:
+            groups: ['product']
+        orders:
+            groups: ['product']
+        positions:
+            groups: ['product']

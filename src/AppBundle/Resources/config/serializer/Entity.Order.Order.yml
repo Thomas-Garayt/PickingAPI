@@ -1,0 +1,15 @@
+AppBundle\Entity\Order\Order:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['order']
+        orderNumber:
+            groups: ['order']
+        customer:
+            groups: ['order']
+        products:
+            groups: ['order']
+        preparations:
+            groups: ['order']
+        status:
+            groups: ['order']

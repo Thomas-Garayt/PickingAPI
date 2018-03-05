@@ -1,0 +1,7 @@
+AppBundle\Entity\Customer\Customer:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['customer']
+        name:
+            groups: ['customer']

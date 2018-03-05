@@ -2,12 +2,12 @@ AppBundle\Entity\Position\Position:
     exclusion_policy: none
     properties:
         name:
-            groups: ['position']
+            groups: ['position','product-position']
         lane:
-            groups: ['position']
+            groups: ['position','product-position']
         landmark:
-            groups: ['position']
+            groups: ['position','product-position']
         shelf:
-            groups: ['position']
+            groups: ['position','product-position']
         section:
-            groups: ['position']
+            groups: ['position','product-position']
