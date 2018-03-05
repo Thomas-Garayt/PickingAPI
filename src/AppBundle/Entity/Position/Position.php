@@ -40,6 +40,12 @@ class Position extends EntityBase {
     */
     private $section;
 
+
+    /**
+    * @ORM\Column(type="boolean")
+    */
+    private $enable;
+
     /**
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product\ProductPosition", mappedBy="position")
     */
