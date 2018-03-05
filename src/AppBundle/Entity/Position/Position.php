@@ -40,7 +40,6 @@ class Position extends EntityBase {
     */
     private $section;
 
-
     /**
     * @ORM\Column(type="boolean")
     */

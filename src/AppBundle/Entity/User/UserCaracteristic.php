@@ -21,12 +21,17 @@ class UserCaracteristic extends EntityBase {
     private $user;
 
     /**
-    * @ORM\Column(type="string")
+    * @ORM\Column(type="integer")
     */
     private $stamina;
 
     /**
-    * @ORM\Column(type="string")
+    * @ORM\Column(type="integer")
+    */
+    private $staminaCoefficient;
+
+    /**
+    * @ORM\Column(type="integer")
     */
     private $strength;
 
@@ -98,6 +103,31 @@ class UserCaracteristic extends EntityBase {
     public function setStrength($strength)
     {
         $this->strength = $strength;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of Stamina Coefficient
+     *
+     * @return mixed
+     */
+    public function getStaminaCoefficient()
+    {
+        return $this->staminaCoefficient;
+    }
+
+    /**
+     * Set the value of Stamina Coefficient
+     *
+     * @param mixed staminaCoefficient
+     *
+     * @return self
+     */
+    public function setStaminaCoefficient($staminaCoefficient)
+    {
+        $this->staminaCoefficient = $staminaCoefficient;
 
         return $this;
     }
