@@ -20,3 +20,13 @@ users:
 position:
     type:     rest
     resource: AppBundle\Controller\Position\PositionController
+
+# Order
+order:
+    type:     rest
+    resource: AppBundle\Controller\Order\OrderController
+
+# Order Product
+order_product:
+    type:     rest
+    resource: AppBundle\Controller\Order\OrderProductController

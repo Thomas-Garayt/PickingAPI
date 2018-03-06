@@ -12,6 +12,14 @@ namespace AppBundle\Controller\Order;
 use AppBundle\Controller\ControllerBase;
 use AppBundle\Entity\Order\Order;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Nelmio\ApiDocBundle\Annotation\Operation;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use FOS\RestBundle\Request\ParamFetcher;
+use \Doctrine\Common\Collections\ArrayCollection;
 
 // Exception
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
