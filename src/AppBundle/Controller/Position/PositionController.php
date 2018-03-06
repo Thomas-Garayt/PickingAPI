@@ -18,6 +18,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Entity
+use AppBundle\Entity\Position\Position;
 
 // Form
 use AppBundle\Form\Type\Position\PositionType;

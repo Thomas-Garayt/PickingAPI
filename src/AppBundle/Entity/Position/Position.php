@@ -194,4 +194,23 @@ class Position extends EntityBase {
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEnable()
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param mixed $enable
+     */
+    public function setEnable($enable): void
+    {
+        $this->enable = $enable;
+    }
+
+
+    
+
 }
