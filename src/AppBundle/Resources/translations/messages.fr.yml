@@ -18,3 +18,7 @@ order:
 order_product:
     error:
         notFound: Produits de commande introuvables
+
+couple:
+    error:
+        notFound: Couple introuvable

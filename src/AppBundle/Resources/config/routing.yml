@@ -35,3 +35,8 @@ order:
 order_product:
     type:     rest
     resource: AppBundle\Controller\Order\OrderProductController
+
+# Couple
+couple:
+    type:     rest
+    resource: AppBundle\Controller\Couple\CoupleController

@@ -24,7 +24,9 @@ use \Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Order\Order;
 use AppBundle\Entity\Order\OrderProduct;
 use AppBundle\Entity\Customer\Customer;
+use AppBundle\Entity\Couple\Couple;
 use AppBundle\Entity\Product\Product;
+
 
 // Exception
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -150,45 +152,13 @@ class OrderController extends ControllerBase {
                 array_push($ids,rand(1,1000));
             }
 
+            sort($ids);
+
             $q = $em->createQueryBuilder('p')
                 ->select('p')
                 ->from('AppBundle:Product\Product','p')
                 ->where('p.id IN (:ids)')
                 ->setParameter('ids', $ids);
-
-
-/*
-$products->OrderById
-foreach($products as $p1) {
-    foreach($products as $p2) {
-        if($p2->getId() <= $p1->getId()) {
-            if($p1->getId() < $p2->getId()) {
-                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
-            }
-            else {
-                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
-            }
-
-            if($couple) {
-                // If the couple exist
-                $couple->setTotal($couple->getTotal() + 1);
-            }
-            else {
-                // If the couple doesnt exist
-                $newCouple = new Couple();
-                $newCouple->setP1($p1);
-                $newCouple->setP2($p2)
-                $newCouple->setTotal(1);
-            }
-        }
-    }
-}
-
-
-p1 | p2 | total
-
-*/
-
 
             $products = $q->getQuery()->getResult();
 
@@ -223,8 +193,87 @@ p1 | p2 | total
             $newOrder->setReference("PickingApp-" . date("YmdHis") . '-' . $customer->getId());
 
             $em->flush();
+
+
+            $this->countCouples($products);
         }
     }
 
+
+    /**
+     * Update couples total sell
+     * @param $products
+     */
+    private function countCouples($products) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($products as $p1) {
+            foreach ($products as $p2) {
+
+                if($p1->getId() === $p2->getId()) {
+                    continue;
+                }
+
+                $couple = null;
+
+                if($p2->getId() <= $p1->getId()) {
+                    if($p1->getId() < $p2->getId()) {
+                        $couple = $em->getRepository(Couple::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
+                    }
+                    else {
+                        $couple = $em->getRepository(Couple::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
+                    }
+
+
+                    if(!$couple) {
+                        // If the couple doesnt exist
+                        $couple = new Couple();
+                        $couple->setP1($p1);
+                        $couple->setP2($p2);
+                    }
+
+                    $couple->setTotal($couple->getTotal() + 1);
+
+                    $em->persist($couple);
+                }
+            }
+        }
+
+        $em->flush();
+    }
+
+
+    /*
+$products->OrderById
+foreach($products as $p1) {
+    foreach($products as $p2) {
+        if($p2->getId() <= $p1->getId()) {
+            if($p1->getId() < $p2->getId()) {
+                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
+            }
+            else {
+                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
+            }
+
+            if($couple) {
+                // If the couple exist
+                $couple->setTotal($couple->getTotal() + 1);
+            }
+            else {
+                // If the couple doesnt exist
+                $newCouple = new Couple();
+                $newCouple->setP1($p1);
+                $newCouple->setP2($p2)
+                $newCouple->setTotal(1);
+            }
+        }
+    }
+}
+
+
+p1 | p2 | total
+
+*/
 
 }

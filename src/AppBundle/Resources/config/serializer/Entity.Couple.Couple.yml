@@ -1,0 +1,11 @@
+AppBundle\Entity\Couple\Couple:
+    exclusion_policy: none
+    properties:
+        id:
+            groups: ['couple']
+        p1:
+            groups: ['couple']
+        p2:
+            groups: ['couple']
+        total:
+            groups: ['couple']

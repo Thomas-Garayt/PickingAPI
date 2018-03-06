@@ -17,3 +17,7 @@ order:
 order_product:
     error:
         notFound: Order Products Not Found
+
+couple:
+    error:
+        notFound: Couple Not Found
