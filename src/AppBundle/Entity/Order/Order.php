@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\EntityBase;
 
 /**
- * @ORM\Table(name="order")
+ * @ORM\Table(name="orders")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Repository\Order\OrderRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -40,7 +40,11 @@ class Order extends EntityBase {
     * @ORM\Column(type="string")
     */
     private $status;
-    // Enum
+
+    /**
+    * @ORM\Column(type="decimal", scale=2)
+    */
+    private $total;
 
     /**
      * Get the value of Order Number
@@ -157,6 +161,31 @@ class Order extends EntityBase {
         } else {
             throw new \InvalidArgumentException('setStatus only accept arguments of type OrderStatus');
         }
+    }
+
+
+    /**
+     * Get the value of Total
+     *
+     * @return mixed
+     */
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+    /**
+     * Set the value of Total
+     *
+     * @param mixed total
+     *
+     * @return self
+     */
+    public function setTotal($total)
+    {
+        $this->total = $total;
+
+        return $this;
     }
 
 }
