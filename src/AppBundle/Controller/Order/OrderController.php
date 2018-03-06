@@ -142,15 +142,63 @@ class OrderController extends ControllerBase {
             $totalWeight = 0;
 
             $em->persist($newOrder);
-            $em->flush();
 
             $count = rand(1,10);
 
+            $ids = array();
+            for($c = 0 ; $c < $count ; $c++) {
+                array_push($ids,rand(1,1000));
+            }
+
+            // $product = $em->getRepository(Product::class)->findOneById(rand(1,1000));
+            var_dump($ids);
+            $ids = implode(",",$ids);
+            var_dump($ids);
+
+            $q = $em->createQueryBuilder()
+                ->select('p')
+                ->from('AppBundle:Product\Product','p')
+                ->where('p.id IN (:ids)')
+                ->setParameter('ids',$ids);
+
+
+/*
+$products->OrderById
+foreach($products as $p1) {
+    foreach($products as $p2) {
+        if($p2->getId() <= $p1->getId()) {
+            if($p1->getId() < $p2->getId()) {
+                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
+            }
+            else {
+                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
+            }
+
+            if($couple) {
+                // If the couple exist
+                $couple->setTotal($couple->getTotal() + 1);
+            }
+            else {
+                // If the couple doesnt exist
+                $newCouple = new Couple();
+                $newCouple->setP1($p1);
+                $newCouple->setP2($p2)
+                $newCouple->setTotal(1);
+            }
+        }
+    }
+}
+
+
+p1 | p2 | total
+
+*/
+
+            $product = $q->getQuery()->getResult();
+
             for($c = 0 ; $c < $count ; $c++) {
 
-                $product = $em->getRepository(Product::class)->findOneById(rand(1,1000));
-
-                $orderProduct = $em->getRepository(OrderProduct::class)->findOneBy(array('order' => $newOrder, 'product' => $product));
+                $orderProduct = $em->getRepository(OrderProduct::class)->findOneBy(array('order' => $newOrder, 'product' => $product[$count]));
 
                 if($orderProduct) {
                     $quantity = rand(1,2);
@@ -160,7 +208,7 @@ class OrderController extends ControllerBase {
                     $quantity = rand(1,2);
                     $newOrderProduct = new OrderProduct();
                     $newOrderProduct->setOrder($newOrder);
-                    $newOrderProduct->setProduct($product);
+                    $newOrderProduct->setProduct($product[$count]);
                     $newOrderProduct->setQuantity($quantity);
                     $newOrderProduct->setCount(0);
                     $newOrderProduct->setUncomplete(false);
