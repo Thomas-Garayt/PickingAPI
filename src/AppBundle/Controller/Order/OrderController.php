@@ -102,4 +102,34 @@ class OrderController extends ControllerBase {
         return $order;
     }
 
+    /**
+     * @Operation(
+     *     tags={"Order"},
+     *     summary="Generate list of order.",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful",
+     *         @Model(type="\AppBundle\Entity\Order\Order")
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "order", "customer"})
+     * @Rest\Get("/orders");
+     */
+    public function getGenerateOrderAction(Request $request) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        // GENERER COMMANDE
+        for($numberOrder = 0 ; $numberOrder < 50 ; $numberOrder++) {
+
+
+            $newOrder = new Order();
+
+            $em->persist($position);
+            $em->flush();
+        }
+    
+    }
+
 }
