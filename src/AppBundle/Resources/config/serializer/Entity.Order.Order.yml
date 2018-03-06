@@ -3,7 +3,7 @@ AppBundle\Entity\Order\Order:
     properties:
         id:
             groups: ['order']
-        orderNumber:
+        reference:
             groups: ['order']
         customer:
             groups: ['order']
@@ -12,4 +12,8 @@ AppBundle\Entity\Order\Order:
         preparations:
             groups: ['order']
         status:
+            groups: ['order']
+        price:
+            groups: ['order']
+        weight:
             groups: ['order']

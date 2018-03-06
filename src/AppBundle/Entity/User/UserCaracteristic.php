@@ -36,30 +36,6 @@ class UserCaracteristic extends EntityBase {
     private $strength;
 
     /**
-     * Get the value of User
-     *
-     * @return mixed
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set the value of User
-     *
-     * @param mixed user
-     *
-     * @return self
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
      * Get the value of Stamina
      *
      * @return mixed
@@ -128,6 +104,31 @@ class UserCaracteristic extends EntityBase {
     public function setStaminaCoefficient($staminaCoefficient)
     {
         $this->staminaCoefficient = $staminaCoefficient;
+
+        return $this;
+    }
+
+
+    /**
+     * Get the value of User
+     *
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set the value of User
+     *
+     * @param mixed user
+     *
+     * @return self
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
 
         return $this;
     }

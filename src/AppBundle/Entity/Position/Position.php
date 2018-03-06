@@ -46,6 +46,11 @@ class Position extends EntityBase {
     private $enable;
 
     /**
+    * @ORM\Column(type="boolean")
+    */
+    private $empty = true;
+
+    /**
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product\ProductPosition", mappedBy="position")
     */
     private $products;
@@ -212,5 +217,30 @@ class Position extends EntityBase {
 
 
 
+
+
+    /**
+     * Get the value of Empty
+     *
+     * @return mixed
+     */
+    public function getEmpty()
+    {
+        return $this->empty;
+    }
+
+    /**
+     * Set the value of Empty
+     *
+     * @param mixed empty
+     *
+     * @return self
+     */
+    public function setEmpty($empty)
+    {
+        $this->empty = $empty;
+
+        return $this;
+    }
 
 }

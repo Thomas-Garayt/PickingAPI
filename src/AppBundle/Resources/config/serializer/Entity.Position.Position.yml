@@ -11,3 +11,7 @@ AppBundle\Entity\Position\Position:
             groups: ['position','product-position']
         section:
             groups: ['position','product-position']
+        enable:
+            groups: ['position','product-position']
+        empty:
+            groups: ['position','product-position']

@@ -21,6 +21,11 @@ position:
     type:     rest
     resource: AppBundle\Controller\Position\PositionController
 
+# Product Position
+product_position:
+    type:     rest
+    resource: AppBundle\Controller\Product\ProductPositionController
+
 # Order
 order:
     type:     rest
