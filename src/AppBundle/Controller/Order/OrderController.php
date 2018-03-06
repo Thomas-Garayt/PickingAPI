@@ -150,16 +150,11 @@ class OrderController extends ControllerBase {
                 array_push($ids,rand(1,1000));
             }
 
-            // $product = $em->getRepository(Product::class)->findOneById(rand(1,1000));
-            var_dump($ids);
-            $ids = implode(",",$ids);
-            var_dump($ids);
-
-            $q = $em->createQueryBuilder()
+            $q = $em->createQueryBuilder('p')
                 ->select('p')
                 ->from('AppBundle:Product\Product','p')
                 ->where('p.id IN (:ids)')
-                ->setParameter('ids',$ids);
+                ->setParameter('ids', $ids);
 
 
 /*
@@ -194,21 +189,22 @@ p1 | p2 | total
 
 */
 
-            $product = $q->getQuery()->getResult();
 
-            for($c = 0 ; $c < $count ; $c++) {
+            $products = $q->getQuery()->getResult();
 
-                $orderProduct = $em->getRepository(OrderProduct::class)->findOneBy(array('order' => $newOrder, 'product' => $product[$count]));
+            foreach ($products as $product) {
+
+                $orderProduct = $em->getRepository(OrderProduct::class)->findOneBy(array('order' => $newOrder, 'product' => $product));
+
+                $quantity = rand(1,2);
 
                 if($orderProduct) {
-                    $quantity = rand(1,2);
                     $orderProduct->setQuantity($orderProduct->getQuantity() + $quantity);
                 }
                 else {
-                    $quantity = rand(1,2);
                     $newOrderProduct = new OrderProduct();
                     $newOrderProduct->setOrder($newOrder);
-                    $newOrderProduct->setProduct($product[$count]);
+                    $newOrderProduct->setProduct($product);
                     $newOrderProduct->setQuantity($quantity);
                     $newOrderProduct->setCount(0);
                     $newOrderProduct->setUncomplete(false);
@@ -220,9 +216,11 @@ p1 | p2 | total
                 $totalWeight += $quantity*$product->getWeight();
             }
 
+
+
             $newOrder->setPrice($totalPrice);
             $newOrder->setWeight($totalWeight);
-            $newOrder->setReference("PickingApp-" . date("Ym") . $newOrder->getId());
+            $newOrder->setReference("PickingApp-" . date("YmdHis") . '-' . $customer->getId());
 
             $em->flush();
         }
