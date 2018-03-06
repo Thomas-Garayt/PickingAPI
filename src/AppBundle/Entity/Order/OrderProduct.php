@@ -17,7 +17,7 @@ use AppBundle\Entity\EntityBase;
 class OrderProduct extends EntityBase {
 
     /**
-    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Order\OrderProduct")
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Order\Order")
     */
     private $order;
 
