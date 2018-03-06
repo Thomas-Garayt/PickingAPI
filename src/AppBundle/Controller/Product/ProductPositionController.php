@@ -64,21 +64,29 @@ class ProductPositionController extends ControllerBase {
     public function getGenerateProductPositionsAction(Request $request) {
 
         $em = $this->getDoctrine()->getManager();
-        $products = $em->getRepository(Product::class)->findAll();
+        $products = $em->getRepository(Product::class)->findBy(array(),array('weight' => 'DESC'));
 
         $emptyPositions = $em->getRepository(Position::class)->findByEmpty(true);
 
         foreach($products as $product) {
-            $pos = array_rand($emptyPositions);
+            $weight = $product->getWeight();
+
+            if($weight >= 30) {
+                $a = array_keys($emptyPositions);
+                $pos = end($a);
+            }
+            else {
+                $pos = array_rand($emptyPositions);
+            }
 
             $randPosition = $emptyPositions[$pos];
 
             $newProductPosition = new ProductPosition();
             $newProductPosition->setPosition($randPosition);
             $newProductPosition->setProduct($product);
-            $weight = $product->getWeight();
-            $rand = $weight <= 1 ? 100 : $weight <= 5 ? 60 : $weight <= 20 ? 30 : 10;
-            $newProductPosition->setQuantity(rand(5,$rand));
+
+            $randQuantity = $weight <= 1 ? 100 : $weight <= 5 ? 60 : $weight <= 20 ? 30 : 10;
+            $newProductPosition->setQuantity(rand(5,$randQuantity));
 
             $randPosition->setEmpty(false);
             unset($emptyPositions[$pos]);
