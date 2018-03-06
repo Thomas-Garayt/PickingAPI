@@ -142,4 +142,53 @@ class Product extends EntityBase {
         return $this;
     }
 
+
+    /**
+     * Get the value of Ean
+     *
+     * @return mixed
+     */
+    public function getEan13()
+    {
+        return $this->ean13;
+    }
+
+    /**
+     * Set the value of Ean
+     *
+     * @param mixed ean13
+     *
+     * @return self
+     */
+    public function setEan13($ean13)
+    {
+        $this->ean13 = $ean13;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Weight
+     *
+     * @return mixed
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * Set the value of Weight
+     *
+     * @param mixed weight
+     *
+     * @return self
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
 }

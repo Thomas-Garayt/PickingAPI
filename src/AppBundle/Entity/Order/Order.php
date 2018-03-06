@@ -19,7 +19,7 @@ class Order extends EntityBase {
     /**
     * @ORM\Column(type="string")
     */
-    private $orderNumber;
+    private $reference;
 
     /**
     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer\Customer")
@@ -44,31 +44,13 @@ class Order extends EntityBase {
     /**
     * @ORM\Column(type="decimal", scale=2)
     */
-    private $total;
+    private $price;
 
     /**
-     * Get the value of Order Number
-     *
-     * @return mixed
-     */
-    public function getOrderNumber()
-    {
-        return $this->orderNumber;
-    }
+    * @ORM\Column(type="decimal", scale=2)
+    */
+    private $weight;
 
-    /**
-     * Set the value of Order Number
-     *
-     * @param mixed orderNumber
-     *
-     * @return self
-     */
-    public function setOrderNumber($orderNumber)
-    {
-        $this->orderNumber = $orderNumber;
-
-        return $this;
-    }
 
     /**
      * Get the value of Customer
@@ -165,25 +147,73 @@ class Order extends EntityBase {
 
 
     /**
-     * Get the value of Total
+     * Get the value of Reference
      *
      * @return mixed
      */
-    public function getTotal()
+    public function getReference()
     {
-        return $this->total;
+        return $this->reference;
     }
 
     /**
-     * Set the value of Total
+     * Set the value of Reference
      *
-     * @param mixed total
+     * @param mixed reference
      *
      * @return self
      */
-    public function setTotal($total)
+    public function setReference($reference)
     {
-        $this->total = $total;
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Price
+     *
+     * @return mixed
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * Set the value of Price
+     *
+     * @param mixed price
+     *
+     * @return self
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Weight
+     *
+     * @return mixed
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * Set the value of Weight
+     *
+     * @param mixed weight
+     *
+     * @return self
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
 
         return $this;
     }

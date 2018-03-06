@@ -119,13 +119,13 @@ class OrderController extends ControllerBase {
      * )
      *
      * @Rest\View(serializerGroups={"base", "order", "customer"})
-     * @Rest\Get("/generate-order");
+     * @Rest\Get("/order/generate/{numberToGenerate}");
      */
     public function getGenerateOrderAction(Request $request) {
 
         $em = $this->getDoctrine()->getManager();
 
-        for($numberOrder = 0 ; $numberOrder < 1 ; $numberOrder++) {
+        for($numberOrder = 0 ; $numberOrder < $request->get('numberToGenerate') ; $numberOrder++) {
 
             // Get a random customer
             $customer = $em->getRepository(Customer::class)->findOneById(rand(1,1000));
@@ -133,12 +133,15 @@ class OrderController extends ControllerBase {
             // Generate new order
             $newOrder = new Order();
             $newOrder->setCustomer($customer);
-            $newOrder->setOrderNumber(1);
+            $newOrder->setReference("");
             $newOrder->setStatus("waiting");
-            $newOrder->setTotal(0);
+            $newOrder->setPrice(0);
+            $newOrder->setWeight(0);
 
-            $total = 0;
+            $totalPrice = 0;
+            $totalWeight = 0;
 
+            $em->persist($newOrder);
             $em->flush();
 
             $count = rand(1,10);
@@ -165,11 +168,14 @@ class OrderController extends ControllerBase {
                     $em->persist($newOrderProduct);
 
                 }
-                $total += $quantity*$product->getPrice();
+                $totalPrice += $quantity*$product->getPrice();
+                $totalWeight += $quantity*$product->getWeight();
             }
 
-            $newOrder->setTotal($total);
-            $em->persist($newOrder);
+            $newOrder->setPrice($totalPrice);
+            $newOrder->setWeight($totalWeight);
+            $newOrder->setReference("PickingApp-" . date("Ym") . $newOrder->getId());
+
             $em->flush();
         }
     }
