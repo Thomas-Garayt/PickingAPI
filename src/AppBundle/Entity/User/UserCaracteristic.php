@@ -10,7 +10,7 @@ use AppBundle\Entity\EntityBase;
 /**
  * @ORM\Table(name="user_caracteristic")
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserCaracteristic\UserCaracteristicRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\User\UserCaracteristicRepository")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class UserCaracteristic extends EntityBase {
@@ -24,6 +24,11 @@ class UserCaracteristic extends EntityBase {
     * @ORM\Column(type="integer")
     */
     private $stamina;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $currentStamina = 100;
 
     /**
     * @ORM\Column(type="integer")
@@ -131,6 +136,30 @@ class UserCaracteristic extends EntityBase {
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentStamina()
+    {
+        return $this->currentStamina;
+    }
+
+    /**
+     * @param mixed $currentStamina
+     */
+    public function setCurrentStamina($currentStamina): void
+    {
+        $this->currentStamina = $currentStamina;
+    }
+
+
+    /**
+     * 
+     */
+    public function resetStamina() {
+        $this->currentStamina = $this->stamina;
     }
 
 }

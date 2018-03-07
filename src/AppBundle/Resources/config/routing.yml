@@ -45,3 +45,8 @@ couple:
 preparation:
     type:     rest
     resource: AppBundle\Controller\Preparation\PreparationController
+
+# User Caracteristic
+user_caracteristic:
+    type:     rest
+    resource: AppBundle\Controller\User\UserCaracteristicController
