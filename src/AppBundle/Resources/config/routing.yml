@@ -40,3 +40,8 @@ order_product:
 couple:
     type:     rest
     resource: AppBundle\Controller\Couple\CoupleController
+
+# Preparation
+preparation:
+    type:     rest
+    resource: AppBundle\Controller\Preparation\PreparationController
