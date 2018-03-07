@@ -130,6 +130,9 @@ class PreparationController extends ControllerBase {
         $em = $this->getDoctrine()->getManager();
 
         $user = $em->getRepository(User::class)->findOneById($request->get('userId'));
+        $userStrength = $user->getCaracteristic()->getStrength();
+        $weightOfPreparation = 0;
+        $maxWeightUser = 1.5*$userStrength;
 
         if (empty($user)) {
             throw new NotFoundHttpException($this->trans('userId.error.notFound'));
@@ -139,28 +142,62 @@ class PreparationController extends ControllerBase {
         $preparation->setStartTime(new DateTime());
         $em->persist($preparation);
 
-        // TODO : Generate PreparationOrder
-        // TODO : Ne pas oublier les order uncompleted
+        // BEGIN - UNCOMPLETE ORDER
+        // TODO : NOT WORKING
+        $uncompleteOrders = $em->getRepository(Order::class)->findBy(array("status" => "uncomplete"), array("createdAt" => "ASC")); // Order[]
+        if($uncompleteOrders) {
 
-        // Get the older order
-        $olderOrder = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
+            $listProduct = array();
 
-        $olderOrder->setStatus("work");
+            //foreach($uncompletedOrders->getProducts() as $orderproduct) {
+            foreach($uncompleteOrders as $uncompleteOrder) { // Order
+                $orderProducts = $uncompleteOrder->getProducts(); // OrderProduct[]
+                foreach($orderProducts as $orderProduct) {
+                    if($orderProduct->getUncomplete() == true) {
+                        $productToAdd = $orderProduct->getProduct();
+                        $productWeight = $productToAdd->getWeight();
 
-        // Create the first PreparationOrder
-        $newPreparationOrder = new PreparationOrder();
-        $newPreparationOrder->setOrder($olderOrder);
-        $newPreparationOrder->setPreparation($preparation);
+                        if(($weightOfPreparation + $productWeight) < $maxWeightUser) {
+                            // Add the product to the list of produt to get
+                            array_push($listProduct,$productToAdd);
+                            $weightOfPreparation +=  $productToAdd->getWeight();
+                        }
+                    }
+                }
 
-        // We fill new course entity for the first order
-        $this->generateCourseOfOrder($olderOrder,$preparation);
+                // Create PreparationOrder for each uncomplete order
+                $po = new PreparationOrder();
+                $po->setOrder($uncompleteOrder);
+                $po->setPreparation($preparation);
+                $em->persist($po);
+
+            }
+
+            $this->generateCourseOfOrder($listProduct,$preparation);
+        }
+        // END - UNCOMPLETE ORDER
+
+
+        // BEGIN - OLDER ORDER
+        if($weightOfPreparation < $maxWeightUser) {
+            // Get the older order
+            $olderOrder = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
+            $olderOrder->setStatus("work");
+
+            $newPreparationOrder = new PreparationOrder();
+            $newPreparationOrder->setOrder($olderOrder);
+            $newPreparationOrder->setPreparation($preparation);
+
+            // We fill new course entity for the first order
+            $this->generateCourseOfOrder($olderOrder,$preparation);
+            $em->persist($newPreparationOrder);
+            $em->persist($olderOrder);
+        }
+        // END - OLDER ORDER
 
 
         // TODO : Get the next order while the user can carry them
 
-
-        $em->persist($olderOrder);
-        $em->persist($newPreparationOrder);
         $em->persist($preparation);
         $em->flush();
 
