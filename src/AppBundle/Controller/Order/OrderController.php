@@ -10,6 +10,7 @@ namespace AppBundle\Controller\Order;
 
 
 use AppBundle\Controller\ControllerBase;
+use AppBundle\Form\Type\Order\OrderType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -258,6 +259,59 @@ class OrderController extends ControllerBase {
         }
 
         return $combinations;
+    }
+
+
+    /**
+     * @Operation(
+     *     tags={"Order"},
+     *     summary="Partialy update the informations of an order.",
+     *     @SWG\Parameter(
+     *         name="body", in="body", required=true,
+     *         @Model(type=OrderType::class)
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="OK",
+     *         @Model(type="\AppBundle\Entity\Order\Order")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Not Found"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Bad Request"
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "order"})
+     * @Rest\Patch("/orders/{id}")
+     */
+    public function patchOrderAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
+        $order = $em->getRepository(Order::class)
+            ->find($request->get('id'));
+
+        if (empty($order)) {
+            throw new NotFoundHttpException($this->trans('order.error.notFound'));
+        }
+
+        $form = $this->createForm(OrderType::class, $order, []);
+
+        $form->submit($request->request->all(), false);
+
+        if ($form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($order);
+            $em->flush();
+
+            return $order;
+        } else {
+            return $form;
+        }
     }
 
 }
