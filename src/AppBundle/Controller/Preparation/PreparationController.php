@@ -144,6 +144,8 @@ class PreparationController extends ControllerBase {
         // Get the older order
         $olderOrder = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
 
+        $olderOrder->setStatus("work");
+
         // Create the first PreparationOrder
         $newPreparationOrder = new PreparationOrder();
         $newPreparationOrder->setOrder($olderOrder);
@@ -167,6 +169,7 @@ class PreparationController extends ControllerBase {
 
         // Get the next order while the user can carry them
 
+        $em->persist($olderOrder);
         $em->persist($newPreparationOrder);
         $em->persist($preparation);
         $em->flush();
