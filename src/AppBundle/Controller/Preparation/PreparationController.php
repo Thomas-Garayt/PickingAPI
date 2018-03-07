@@ -13,6 +13,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use FOS\RestBundle\Request\ParamFetcher;
 use \Doctrine\Common\Collections\ArrayCollection;
+use \Datetime;
 
 // Exception
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,9 +22,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use AppBundle\Entity\Preparation\Preparation;
 use AppBundle\Entity\Product\Product;
 use AppBundle\Entity\Product\Position;
+use AppBundle\Entity\User;
 
 // Form
-use AppBundle\Form\Type\Preparation\PreparationType;
 
 class PreparationController extends ControllerBase {
 
@@ -102,19 +103,11 @@ class PreparationController extends ControllerBase {
     /**
      * @Operation(
      *     tags={"Preparation"},
-     *     summary="Partialy update the informations of a preparation.",
-     *     @SWG\Parameter(
-     *         name="body", in="body", required=true,
-     *         @Model(type=PreparationType::class)
-     *     ),
+     *     summary="Add a new preparation.",
      *     @SWG\Response(
-     *         response="200",
-     *         description="OK",
+     *         response="201",
+     *         description="Created",
      *         @Model(type="\AppBundle\Entity\Preparation\Preparation")
-     *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Not Found"
      *     ),
      *     @SWG\Response(
      *         response="400",
@@ -122,33 +115,32 @@ class PreparationController extends ControllerBase {
      *     )
      * )
      *
-     * @Rest\View(serializerGroups={"base", "preparation"})
-     * @Rest\Patch("/preparations/{id}")
+     * @Rest\View(statusCode=Response::HTTP_CREATED, serializerGroups={"base", "preparation"})
+     * @Rest\Post("/preparations/{userId}")
      */
-    public function patchPreparationAction(Request $request) {
+    public function postPreparationsAction(Request $request) {
+
+        $preparation = new Preparation();
+
         $em = $this->getDoctrine()->getManager();
 
-        $preparation = $em->getRepository(Preparation::class)
-                ->find($request->get('id'));
+        $user = $em->getRepository(User::class)->findOneById($request->get('userId'));
 
-        if (empty($preparation)) {
-            throw new NotFoundHttpException($this->trans('preparation.error.notFound'));
+        if (empty($user)) {
+            throw new NotFoundHttpException($this->trans('userId.error.notFound'));
         }
 
-        $form = $this->createForm(PreparationType::class, $preparation, []);
+        $preparation->setUser($user);
+        $preparation->setStartTime(new DateTime());
 
-        $form->submit($request->request->all(), false);
+        // TODO : Generate PreparationOrder
+        // Get the older order
 
-        if ($form->isValid()) {
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($preparation);
-            $em->flush();
+        $em->persist($preparation);
+        $em->flush();
 
-            return $preparation;
-        } else {
-            return $form;
-        }
+        return $preparation;
     }
 
     /*
