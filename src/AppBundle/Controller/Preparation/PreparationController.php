@@ -137,6 +137,7 @@ class PreparationController extends ControllerBase {
 
         $preparation->setUser($user);
         $preparation->setStartTime(new DateTime());
+        $em->persist($preparation);
 
         // TODO : Generate PreparationOrder
         // TODO : Ne pas oublier les order uncompleted
@@ -152,7 +153,30 @@ class PreparationController extends ControllerBase {
         $newPreparationOrder->setPreparation($preparation);
 
         // We fill new course entity for the first order
-        $orderProducts = $em->getRepository(OrderProduct::class)->findBy(array("order" => $olderOrder));
+        $this->generateCourseOfOrder($olderOrder,$preparation);
+
+
+        // TODO : Get the next order while the user can carry them
+
+
+        $em->persist($olderOrder);
+        $em->persist($newPreparationOrder);
+        $em->persist($preparation);
+        $em->flush();
+
+        return $preparation;
+    }
+
+    /**
+     * Generate the Course Entity for an Order and a Preparation
+     * @param $order
+     * @param $preparation
+     */
+    private function generateCourseOfOrder($order,$preparation) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $orderProducts = $em->getRepository(OrderProduct::class)->findBy(array("order" => $order));
 
         foreach($orderProducts as $op) {
             $product = $op->getProduct();
@@ -167,14 +191,7 @@ class PreparationController extends ControllerBase {
             $em->persist($newCourse);
         }
 
-        // Get the next order while the user can carry them
-
-        $em->persist($olderOrder);
-        $em->persist($newPreparationOrder);
-        $em->persist($preparation);
         $em->flush();
-
-        return $preparation;
     }
 
     private function getProductPosition($productId) {
