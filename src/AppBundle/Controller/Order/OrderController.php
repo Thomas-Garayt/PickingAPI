@@ -10,6 +10,7 @@ namespace AppBundle\Controller\Order;
 
 
 use AppBundle\Controller\ControllerBase;
+use AppBundle\Form\Type\Order\OrderType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -208,72 +209,109 @@ class OrderController extends ControllerBase {
 
         $em = $this->getDoctrine()->getManager();
 
-        foreach ($products as $p1) {
-            foreach ($products as $p2) {
+        $combinations = $this->findCombinations($products);
 
-                if($p1->getId() === $p2->getId()) {
-                    continue;
-                }
+        foreach ($combinations as $p) {
 
-                $couple = null;
-
-                if($p2->getId() <= $p1->getId()) {
-                    if($p1->getId() < $p2->getId()) {
-                        $couple = $em->getRepository(Couple::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
-                    }
-                    else {
-                        $couple = $em->getRepository(Couple::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
-                    }
-
-
-                    if(!$couple) {
-                        // If the couple doesnt exist
-                        $couple = new Couple();
-                        $couple->setP1($p1);
-                        $couple->setP2($p2);
-                    }
-
-                    $couple->setTotal($couple->getTotal() + 1);
-
-                    $em->persist($couple);
-                }
+            if(count($p) != 2) {
+                continue;
             }
+
+            $couple = $em->getRepository(Couple::class)->findOneBy(array('p1' => $p[0], 'p2' => $p[1]));
+
+            if(!$couple) {
+                $couple = new Couple();
+                $couple->setP1($p[0]);
+                $couple->setP2($p[1]);
+            }
+
+            $couple->setTotal($couple->getTotal() + 1);
+
+            $em->persist($couple);
+
         }
 
         $em->flush();
     }
 
 
-    /*
-$products->OrderById
-foreach($products as $p1) {
-    foreach($products as $p2) {
-        if($p2->getId() <= $p1->getId()) {
-            if($p1->getId() < $p2->getId()) {
-                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p1, 'p2' => $p2));
-            }
-            else {
-                $couple = $em->getRepository(Product::class)->findOneBy(array('p1' => $p2, 'p2' => $p1));
-            }
+    /**
+     * @param $products
+     * @return array
+     */
+    private function findCombinations($products) {
+        $combinations = array();
 
-            if($couple) {
-                // If the couple exist
-                $couple->setTotal($couple->getTotal() + 1);
-            }
-            else {
-                // If the couple doesnt exist
-                $newCouple = new Couple();
-                $newCouple->setP1($p1);
-                $newCouple->setP2($p2)
-                $newCouple->setTotal(1);
+        foreach ($products as $p1) {
+            foreach ($products as $p2) {
+
+                if($p1->getId() == $p2->getId() || $p2->getId() > $p1->getId()) {
+                    continue;
+                }
+
+                $key = implode(',', array($p2->getId(), $p1->getId()));
+                $combination = array($p1, $p2);
+
+                if(!in_array($key, $combinations)) {
+                    $combinations[$key] = $combination;
+                }
             }
         }
+
+        return $combinations;
     }
-}
 
 
-p1 | p2 | total
+    /**
+     * @Operation(
+     *     tags={"Order"},
+     *     summary="Partialy update the informations of an order.",
+     *     @SWG\Parameter(
+     *         name="body", in="body", required=true,
+     *         @Model(type=OrderType::class)
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="OK",
+     *         @Model(type="\AppBundle\Entity\Order\Order")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Not Found"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Bad Request"
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "order"})
+     * @Rest\Patch("/orders/{id}")
+     */
+    public function patchOrderAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
 
-*/
+        $order = $em->getRepository(Order::class)
+            ->find($request->get('id'));
+
+        if (empty($order)) {
+            throw new NotFoundHttpException($this->trans('order.error.notFound'));
+        }
+
+        $form = $this->createForm(OrderType::class, $order, []);
+
+        $form->submit($request->request->all(), false);
+
+        if ($form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($order);
+            $em->flush();
+
+            return $order;
+        } else {
+            return $form;
+        }
+    }
 
 }
