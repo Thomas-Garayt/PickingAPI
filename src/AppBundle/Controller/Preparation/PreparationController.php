@@ -20,10 +20,14 @@ use \Datetime;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Entity
-use AppBundle\Entity\Preparation\Preparation;
-use AppBundle\Entity\Product\Product;
-use AppBundle\Entity\Product\Position;
 use AppBundle\Entity\User;
+use AppBundle\Entity\Preparation\Preparation;
+use AppBundle\Entity\Preparation\PreparationOrder;
+use AppBundle\Entity\Product\Product;
+use AppBundle\Entity\Product\ProductPosition;
+use AppBundle\Entity\Order\Order;
+use AppBundle\Entity\Order\OrderProduct;
+use AppBundle\Entity\Course\Course;
 
 // Form
 
@@ -135,13 +139,49 @@ class PreparationController extends ControllerBase {
         $preparation->setStartTime(new DateTime());
 
         // TODO : Generate PreparationOrder
+        // TODO : Ne pas oublier les order uncompleted
+
         // Get the older order
+        $olderOrder = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
 
+        $olderOrder->setStatus("work");
 
+        // Create the first PreparationOrder
+        $newPreparationOrder = new PreparationOrder();
+        $newPreparationOrder->setOrder($olderOrder);
+        $newPreparationOrder->setPreparation($preparation);
+
+        // We fill new course entity for the first order
+        $orderProducts = $em->getRepository(OrderProduct::class)->findBy(array("order" => $olderOrder));
+
+        foreach($orderProducts as $op) {
+            $product = $op->getProduct();
+            $quantity = $op->getQuantity();
+            $bestPosition = $this->getProductPosition($product->getId()); // bestPosition is the position with higher quantity
+
+            $newCourse = new Course();
+            $newCourse->setPreparation($preparation);
+            $newCourse->setProductPosition($bestPosition);
+            $newCourse->setQuantity($quantity);
+
+            $em->persist($newCourse);
+        }
+
+        // Get the next order while the user can carry them
+
+        $em->persist($olderOrder);
+        $em->persist($newPreparationOrder);
         $em->persist($preparation);
         $em->flush();
 
         return $preparation;
+    }
+
+    private function getProductPosition($productId) {
+        $em = $this->getDoctrine()->getManager();
+
+        // We take the productposition which have the greateast quantity
+        return $em->getRepository(ProductPosition::class)->findOneBy(array("product" => $productId), array("quantity" => "DESC"), 1);;
     }
 
     /*
@@ -149,7 +189,6 @@ class PreparationController extends ControllerBase {
     * productPositions must be ordered by id
     */
     private function getDistanceForProducts($productPositions) {
-
 
         // Initialize position and number of line
         // A = 65...
