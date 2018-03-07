@@ -20,9 +20,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Entity
 use AppBundle\Entity\Preparation\Preparation;
+use AppBundle\Entity\Preparation\PreparationOrder;
 use AppBundle\Entity\Product\Product;
 use AppBundle\Entity\Product\Position;
 use AppBundle\Entity\User;
+use AppBundle\Entity\Order\Order;
 
 // Form
 
@@ -135,12 +137,32 @@ class PreparationController extends ControllerBase {
 
         // TODO : Generate PreparationOrder
         // Get the older order
+        $order = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
+        // Create the first PreparationOrder
+        $newPreparationOrder = new PreparationOrder();
+        $newPreparationOrder->setOrder($order);
+        $newPreparationOrder->setPreparation($preparation);
+
+        // Get the next order while the user can carry them
 
 
+        $em->persist($newPreparationOrder);
         $em->persist($preparation);
         $em->flush();
 
         return $preparation;
+    }
+
+    private function getProductPosition($productId) {
+        $productPosition = null;
+
+        // We take the productposition which have the greateast quantity
+        $productsPositions = $em->getRepository(ProductPosition::class)->findBy(array("product" => $productId));
+
+        foreach($productsPositions as $position) {
+        }
+
+        return $productPosition;
     }
 
     /*
