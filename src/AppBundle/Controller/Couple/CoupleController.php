@@ -37,7 +37,7 @@ class CoupleController extends ControllerBase {
      * @Rest\View(serializerGroups={"base", "couple", "product"})
      * @Rest\Get("/couples");
      */
-    public function getOrdersAction(Request $request) {
+    public function getCouplesAction(Request $request) {
 
         $em = $this->getDoctrine()->getManager();
         $couples = $em->getRepository(Couple::class)->findAll();
