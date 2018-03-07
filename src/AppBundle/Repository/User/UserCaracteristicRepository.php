@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository\UserCaracteristic;
+namespace AppBundle\Repository\User;
 
 use AppBundle\Repository\RepositoryBase;
 
