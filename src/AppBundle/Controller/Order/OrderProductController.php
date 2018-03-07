@@ -11,6 +11,7 @@ namespace AppBundle\Controller\Order;
 
 use AppBundle\Controller\ControllerBase;
 use AppBundle\Entity\Order\OrderProduct;
+use AppBundle\Form\Type\Order\OrderProductType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -104,5 +105,58 @@ class OrderProductController extends ControllerBase {
         }
 
         return $products;
+    }
+
+
+    /**
+     * @Operation(
+     *     tags={"OrderProduct"},
+     *     summary="Partialy update the informations of an order product.",
+     *     @SWG\Parameter(
+     *         name="body", in="body", required=true,
+     *         @Model(type=OrderProductType::class)
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="OK",
+     *         @Model(type="\AppBundle\Entity\Order\OrderProduct")
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Not Found"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Bad Request"
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "order-product"})
+     * @Rest\Patch("/orderproducts/{id}")
+     */
+    public function patchOrderProductsAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
+        $order = $em->getRepository(OrderProduct::class)
+            ->find($request->get('id'));
+
+        if (empty($order)) {
+            throw new NotFoundHttpException($this->trans('order_product.error.notFound'));
+        }
+
+        $form = $this->createForm(OrderProductType::class, $order, []);
+
+        $form->submit($request->request->all(), false);
+
+        if ($form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($order);
+            $em->flush();
+
+            return $order;
+        } else {
+            return $form;
+        }
     }
 }

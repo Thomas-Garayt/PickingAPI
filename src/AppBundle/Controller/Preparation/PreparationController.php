@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Preparation;
 
 // Required dependencies for Controller and Annotations
 use \AppBundle\Controller\ControllerBase;
+use AppBundle\Form\Type\Preparation\PreparationType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -209,4 +210,36 @@ class PreparationController extends ControllerBase {
         return $numberLane;
     }
 
+
+    /**
+     * @Operation(
+     *     tags={"Preparation"},
+     *     summary="Finish a preparation by identifier.",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful",
+     *         @Model(type="\AppBundle\Entity\Preparation\Preparation")
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "preparation"})
+     * @Rest\Get("/preparations/finish/{id}")
+     */
+    public function getFinishPreparationAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+
+        $preparation = $em->getRepository(Preparation::class)
+            ->find($request->get('id'));
+
+        if (empty($preparation)) {
+            throw new NotFoundHttpException($this->trans('preparation.error.notFound'));
+        }
+
+        $preparation->setEndTime(new DateTime());
+
+        $em->persist($preparation);
+        $em->flush();
+
+        return $preparation;
+    }
 }
