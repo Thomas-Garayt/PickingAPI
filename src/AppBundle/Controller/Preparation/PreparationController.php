@@ -143,13 +143,11 @@ class PreparationController extends ControllerBase {
         $em->persist($preparation);
 
         // BEGIN - UNCOMPLETE ORDER
-        // TODO : NOT WORKING
         $uncompleteOrders = $em->getRepository(Order::class)->findBy(array("status" => "uncomplete"), array("createdAt" => "ASC")); // Order[]
         if($uncompleteOrders) {
 
-            $listProduct = array();
+            $orderTake = false;
 
-            //foreach($uncompletedOrders->getProducts() as $orderproduct) {
             foreach($uncompleteOrders as $uncompleteOrder) { // Order
                 $orderProducts = $uncompleteOrder->getProducts(); // OrderProduct[]
                 foreach($orderProducts as $orderProduct) {
@@ -158,30 +156,42 @@ class PreparationController extends ControllerBase {
                         $productWeight = $productToAdd->getWeight();
 
                         if(($weightOfPreparation + $productWeight) < $maxWeightUser) {
-                            // Add the product to the list of produt to get
-                            array_push($listProduct,$productToAdd);
                             $weightOfPreparation +=  $productToAdd->getWeight();
+                            $orderTake = true;
                         }
                     }
                 }
 
-                // Create PreparationOrder for each uncomplete order
-                $po = new PreparationOrder();
-                $po->setOrder($uncompleteOrder);
-                $po->setPreparation($preparation);
-                $em->persist($po);
+                if($orderTake) {
+                    // Create PreparationOrder for each uncomplete order
+                    $po = new PreparationOrder();
+                    $po->setOrder($uncompleteOrder);
+                    $po->setPreparation($preparation);
+                    $uncompleteOrder->setStatus("work");
 
+                    $em->persist($po);
+                    $em->persist($uncompleteOrder);
+
+                    $this->generateCourseOfUncompleteOrder($uncompleteOrder,$preparation);
+                }
+
+                $orderTake = false;
             }
 
-            $this->generateCourseOfOrder($listProduct,$preparation);
         }
         // END - UNCOMPLETE ORDER
 
+        $em->flush();
 
         // BEGIN - OLDER ORDER
         if($weightOfPreparation < $maxWeightUser) {
             // Get the older order
             $olderOrder = $em->getRepository(Order::class)->findOneBy(array("status" => "waiting"), array("createdAt" => "ASC"), 1);
+
+            if(empty($olderOrder)) {
+                throw new NotFoundHttpException($this->trans('preparation.error.notFound'));
+            }
+
             $olderOrder->setStatus("work");
 
             $newPreparationOrder = new PreparationOrder();
@@ -192,15 +202,53 @@ class PreparationController extends ControllerBase {
             $this->generateCourseOfOrder($olderOrder,$preparation);
             $em->persist($newPreparationOrder);
             $em->persist($olderOrder);
+
+            $weightOfPreparation += $olderOrder->getWeight();
         }
         // END - OLDER ORDER
 
-
-        // TODO : Get the next order while the user can carry them
-
-        $em->persist($preparation);
         $em->flush();
 
+        // BEGIN - OTHER ORDERS
+        $productPositionOfPreparation = $this->getProductPositionsOfPreparation($preparation);
+        while($weightOfPreparation < $maxWeightUser) {
+            $olderOrders = $em->getRepository(Order::class)->findBy(array("status" => "waiting"), array("createdAt" => "ASC"), 30);
+            if($olderOrders) {
+
+                $orderMinDistance = $olderOrders[0];
+                $productposition = $this->getProductPositionsOfOrder($orderMinDistance);
+                $minDistance = $this->getDistanceForProducts($productposition);
+
+                // We compare the current preparation with the 30 older orders
+                foreach($olderOrders as $order) {
+                    $productPositionOfOrder = $this->getProductPositionsOfOrder($order);
+                    $listProductsPositions = array_merge($productPositionOfPreparation,$productPositionOfOrder);
+
+                    // Ordering the productPosition list (to use getDistanceForProducts)
+                    $listProductsPositions = $this->orderProductsPositions($listProductsPositions);
+
+                    $distance = $this->getDistanceForProducts($listProductsPositions);
+                    if($distance < $minDistance) {
+                        $orderMinDistance = $order;
+                        $minDistance = $distance;
+                    }
+                }
+
+                $newPreparationOrder = new PreparationOrder();
+                $newPreparationOrder->setOrder($orderMinDistance);
+                $newPreparationOrder->setPreparation($preparation);
+
+                $this->generateCourseOfOrder($orderMinDistance,$preparation);
+
+                $weightOfPreparation += $orderMinDistance->getWeight();
+                $orderMinDistance->setStatus("work");
+                $em->persist($newPreparationOrder);
+                $em->persist($orderMinDistance);
+            }
+        }
+        // END - OTHER ORDERS
+
+        $em->flush();
         return $preparation;
     }
 
@@ -231,11 +279,89 @@ class PreparationController extends ControllerBase {
         $em->flush();
     }
 
+    private function generateCourseOfUncompleteOrder($order,$preparation) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        $orderProducts = $em->getRepository(OrderProduct::class)->findBy(array("order" => $order));
+
+        foreach($orderProducts as $op) {
+            if($op->getUncomplete() == true) {
+                $product = $op->getProduct();
+                $quantity = $op->getQuantity();
+                $bestPosition = $this->getProductPosition($product->getId()); // bestPosition is the position with higher quantity
+
+                $newCourse = new Course();
+                $newCourse->setPreparation($preparation);
+                $newCourse->setProductPosition($bestPosition);
+                $newCourse->setQuantity($quantity);
+
+                $em->persist($newCourse);
+            }
+        }
+
+        $em->flush();
+    }
+
+    private function getProductPositionsOfPreparation($preparation) {
+        $toReturn = array();
+
+        $em = $this->getDoctrine()->getManager();
+        // Order important here for "getDistanceFroProducts"
+        $courses = $em->getRepository(Course::class)->findBy(array("preparation" => $preparation), array("productPosition" => "ASC"));
+
+        foreach($courses as $course) {
+            array_push($toReturn,$course->getProductPosition());
+        }
+
+        return $toReturn;
+    }
+
     private function getProductPosition($productId) {
         $em = $this->getDoctrine()->getManager();
 
         // We take the productposition which have the greateast quantity
-        return $em->getRepository(ProductPosition::class)->findOneBy(array("product" => $productId), array("quantity" => "DESC"), 1);;
+        return $em->getRepository(ProductPosition::class)->findOneBy(array("product" => $productId), array("quantity" => "DESC"), 1);
+    }
+
+    private function getProductPositionsOfOrder($order) {
+        $toReturn = array();
+
+        $em = $this->getDoctrine()->getManager();
+
+        $orderProducts = $em->getRepository(OrderProduct::class)->findBy(array("order" => $order));
+
+        foreach($orderProducts as $orderProduct) {
+
+            $bestPosition = $this->getProductPosition($orderProduct->getProduct()->getId());
+            array_push($toReturn,$bestPosition);
+
+        }
+
+        return $toReturn;
+    }
+
+    private function orderProductsPositions($listProductsPositions) {
+        $toReturn = array();
+
+        if($listProductsPositions) {
+            $lastProductPosition = $listProductsPositions[0];
+            array_push($toReturn,$lastProductPosition);
+            unset($listProductsPositions[0]);
+            foreach($listProductsPositions as $productPosition) {
+                if($productPosition->getId() < $lastProductPosition->getId()) {
+                    array_unshift($toReturn,$productPosition);
+                }
+                else {
+                    array_push($toReturn,$productPosition);
+                }
+                $lastProductPosition = $productPosition;
+            }
+        }
+
+        // array_unshift($toReturn,);
+        // array_push($toReturn,)
+        return $toReturn;
     }
 
     /*
@@ -247,7 +373,7 @@ class PreparationController extends ControllerBase {
         // Initialize position and number of line
         // A = 65...
         $currentLane = ord($productPositions[0]->getPosition()->getLane());
-        $numberlane = $currentLane%2 == 0 ? 2 : 1;
+        $numberLane = $currentLane%2 == 0 ? 2 : 1;
         unset($productPositions[0]);
 
         foreach($productPositions as $productPosition) {
@@ -275,8 +401,9 @@ class PreparationController extends ControllerBase {
         }
 
         // Going to the exit of the picking zone
+        // TODO : Error during the first generation (offset -1)
         $lastPosition = ord($productPositions[count($productPositions)-1]->getPosition()->getLane());
-        $numberlane += $lastPosition%2 == 0 ? 0 : 1;
+        $numberLane += $lastPosition%2 == 0 ? 0 : 1;
 
         return $numberLane;
     }
