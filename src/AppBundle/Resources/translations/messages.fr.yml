@@ -22,3 +22,8 @@ order_product:
 couple:
     error:
         notFound: Couple introuvable
+
+
+preparation:
+    error:
+        notFound: Preparation introuvable

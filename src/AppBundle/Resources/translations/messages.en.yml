@@ -8,7 +8,7 @@ user:
 
 position:
     error:
-        notFound: Order Not Found
+        notFound: Position Not Found
 
 order:
     error:
@@ -21,3 +21,7 @@ order_product:
 couple:
     error:
         notFound: Couple Not Found
+
+preparation:
+    error:
+        notFound: Preparation Not Found
