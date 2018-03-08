@@ -5,7 +5,7 @@ AppBundle\Entity\Course\Course:
             groups: ['course']
         preparation:
             groups: ['course']
-        productposition:
+        productPosition:
             groups: ['course']
         stepValidated:
             groups: ['course']
