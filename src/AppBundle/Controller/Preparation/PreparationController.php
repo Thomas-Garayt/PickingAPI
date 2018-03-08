@@ -401,9 +401,17 @@ class PreparationController extends ControllerBase {
         }
 
         // Going to the exit of the picking zone
-        // TODO : Error during the first generation (offset -1)
-        $lastPosition = ord($productPositions[count($productPositions)-1]->getPosition()->getLane());
-        $numberLane += $lastPosition%2 == 0 ? 0 : 1;
+        // Fix : Error during the first generation (offset -1)
+        $countPos = count($productPositions);
+
+        if($countPos > 0) {
+            --$countPos;
+        }
+
+        if(isset($productPositions[$countPos])) {
+            $lastPosition = ord($productPositions[$countPos]->getPosition()->getLane());
+            $numberLane += $lastPosition%2 == 0 ? 0 : 1;
+        }
 
         return $numberLane;
     }
@@ -434,6 +442,19 @@ class PreparationController extends ControllerBase {
         }
 
         $preparation->setEndTime(new DateTime());
+
+
+        $preparationOrders = $em->getRepository(PreparationOrder::class)
+            ->findByPreparation($preparation);
+
+
+        if(!empty($preparationOrders)) {
+            foreach ($preparationOrders as $preparationOrder) {
+                $order = $preparationOrder->getOrder();
+                $order->setStatus("finished");
+                $em->persist($order);
+            }
+        }
 
         $em->persist($preparation);
         $em->flush();
