@@ -2,10 +2,10 @@ AppBundle\Entity\Product\ProductPosition:
     exclusion_policy: none
     properties:
         id:
-            groups: ['product-position']
+            groups: ['product-position', 'course']
         position:
-            groups: ['product-position']
+            groups: ['product-position', 'course']
         product:
-            groups: ['product-position']
+            groups: ['product-position', 'course']
         quantity:
-            groups: ['product-position']
+            groups: ['product-position', 'course']

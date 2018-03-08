@@ -25,3 +25,7 @@ couple:
 preparation:
     error:
         notFound: Preparation Not Found
+
+course:
+    error:
+        notFound: Course Not Found

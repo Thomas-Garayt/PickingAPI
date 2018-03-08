@@ -27,3 +27,7 @@ couple:
 preparation:
     error:
         notFound: Preparation introuvable
+
+course:
+    error:
+        notFound: Course introuvable
