@@ -119,9 +119,13 @@ class UserCaracteristicController extends ControllerBase {
      */
     private function calculateCurrentStamina($usercaracteristic) {
 
-        $stamina = $usercaracteristic->getCurrentStamina() * ($usercaracteristic->getStaminaCoefficient() /100);
+        $stamina = $usercaracteristic->getStamina() * ($usercaracteristic->getStaminaCoefficient() /100);
 
-        $stamina = round($stamina, 0, PHP_ROUND_HALF_DOWN);
+        $stamina = round($usercaracteristic->getCurrentStamina() - $stamina, 0, PHP_ROUND_HALF_DOWN);
+
+        if($stamina < 0) {
+            $stamina = 0;
+        }
 
         return $stamina;
     }
