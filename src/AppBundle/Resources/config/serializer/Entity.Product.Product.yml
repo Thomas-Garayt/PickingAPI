@@ -4,13 +4,13 @@ AppBundle\Entity\Product\Product:
         id:
             groups: ['product']
         ean13:
-            groups: ['product']
+            groups: ['product', 'course']
         description:
-            groups: ['product']
+            groups: ['product', 'course']
         price:
             groups: ['product']
         weight:
-            groups: ['product']
+            groups: ['product', 'course']
         orders:
             groups: ['product']
         positions:
