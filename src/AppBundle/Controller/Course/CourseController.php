@@ -59,14 +59,17 @@ class CourseController extends ControllerBase {
         }
 
 
-        $course = $em->getRepository(Course::class)->findBy(
-            array(
-                'preparation' => $preparation,
-                'stepValidated' => false,
-            ),
-            array("createdAt" => "ASC"),
-            1
-        );
+        $course = $em->createQueryBuilder('c')
+            ->select('c')
+            ->from('AppBundle:Course\Course', 'c')
+            ->join('c.productPosition', 'p')
+            ->where('c.preparation= :preparation')
+            ->setParameter('preparation', $preparation->getId())
+            ->andWhere('c.stepValidated=0')
+            ->orderBy('p.position', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()->getResult();
+
 
         if (empty($course)) {
             throw new NotFoundHttpException($this->trans('course.error.notFound'));
