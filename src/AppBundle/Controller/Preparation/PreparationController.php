@@ -18,6 +18,7 @@ use \Datetime;
 
 // Exception
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException ;
 
 // Entity
 use AppBundle\Entity\User;
@@ -125,8 +126,6 @@ class PreparationController extends ControllerBase {
      */
     public function postPreparationsAction(Request $request) {
 
-        $preparation = new Preparation();
-
         $em = $this->getDoctrine()->getManager();
 
         $user = $em->getRepository(User::class)->findOneById($request->get('userId'));
@@ -138,6 +137,11 @@ class PreparationController extends ControllerBase {
             throw new NotFoundHttpException($this->trans('userId.error.notFound'));
         }
 
+        if($user->getCaracteristic()->getCurrentStamina() == 0) {
+            throw new PreconditionFailedHttpException($this->trans('user.error.notstamina'));
+        }
+
+        $preparation = new Preparation();
         $preparation->setUser($user);
         $preparation->setStartTime(new DateTime());
         $em->persist($preparation);
@@ -288,7 +292,7 @@ class PreparationController extends ControllerBase {
         foreach($orderProducts as $op) {
             if($op->getUncomplete() == true) {
                 $product = $op->getProduct();
-                $quantity = $op->getQuantity();
+                $quantity = $op->getQuantity() - $op->getCount();
                 $bestPosition = $this->getProductPosition($product->getId()); // bestPosition is the position with higher quantity
 
                 $newCourse = new Course();
