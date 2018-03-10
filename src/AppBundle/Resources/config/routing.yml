@@ -51,8 +51,12 @@ user_caracteristic:
     type:     rest
     resource: AppBundle\Controller\User\UserCaracteristicController
 
-
 # Course
 course:
     type:     rest
     resource: AppBundle\Controller\Course\CourseController
+
+# Notification
+notification:
+    type:     rest
+    resource: AppBundle\Controller\Notification\NotificationController

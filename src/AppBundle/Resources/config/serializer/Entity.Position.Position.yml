@@ -2,16 +2,16 @@ AppBundle\Entity\Position\Position:
     exclusion_policy: none
     properties:
         name:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         lane:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         landmark:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         shelf:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         section:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         enable:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
         empty:
-            groups: ['position','product-position']
+            groups: ['position','product-position', 'notification']
