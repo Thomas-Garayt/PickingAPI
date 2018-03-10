@@ -59,6 +59,28 @@ class PreparationController extends ControllerBase {
     /**
      * @Operation(
      *     tags={"Preparation"},
+     *     summary="Get the list of preparation not finished yet.",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful",
+     *         @Model(type="\AppBundle\Entity\Preparation\Preparation")
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "preparation"})
+     * @Rest\Get("/preparations/notfinish");
+     */
+    public function getPreparationsNotFinishedAction(Request $request) {
+
+        $em = $this->getDoctrine()->getManager();
+        $preparations = $em->getRepository(Preparation::class)->findBy(array("endTime" => NULL));
+
+        return $preparations;
+    }
+
+    /**
+     * @Operation(
+     *     tags={"Preparation"},
      *     summary="Get a preparation by identifier.",
      *     @SWG\Response(
      *         response="200",
