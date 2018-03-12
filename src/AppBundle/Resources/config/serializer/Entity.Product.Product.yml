@@ -2,7 +2,7 @@ AppBundle\Entity\Product\Product:
     exclusion_policy: none
     properties:
         id:
-            groups: ['product', 'notification']
+            groups: ['product', 'notification', 'preparation', 'preparation']
         ean13:
             groups: ['product', 'course', 'notification']
         description:
