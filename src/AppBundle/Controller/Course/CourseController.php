@@ -31,6 +31,50 @@ use AppBundle\Entity\Preparation\Preparation;
 
 class CourseController extends ControllerBase {
 
+    /**
+     * @Operation(
+     *     tags={"Course"},
+     *     summary="Get course list by preparation identifier.",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful",
+     *         @Model(type="\AppBundle\Entity\Course\Course")
+     *     )
+     * )
+     *
+     * @Rest\View(serializerGroups={"base", "course", "product-position"})
+     * @Rest\Get("/courses/{preparationId}")
+     */
+    public function getCoursesAction(Request $request) {
+
+        $em = $this->getDoctrine()->getManager();
+
+
+        $preparation = $em->getRepository(Preparation::class)->find($request->get('preparationId'));
+
+
+        if(empty($preparation)) {
+            throw new NotFoundHttpException($this->trans('preparation.error.notFound'));
+        }
+
+
+        $courses = $em->createQueryBuilder('c')
+            ->select('c')
+            ->from('AppBundle:Course\Course', 'c')
+            ->join('c.productPosition', 'p')
+            ->where('c.preparation= :preparation')
+            ->setParameter('preparation', $preparation->getId())
+            ->andWhere('c.stepValidated=0')
+            ->orderBy('p.position', 'ASC')
+            ->getQuery()->getResult();
+
+
+        if (empty($courses)) {
+            throw new NotFoundHttpException($this->trans('course.error.notFound'));
+        }
+
+        return $courses;
+    }
 
     /**
      * @Operation(
@@ -44,7 +88,7 @@ class CourseController extends ControllerBase {
      * )
      *
      * @Rest\View(serializerGroups={"base", "course", "product-position"})
-     * @Rest\Get("/courses/{preparationId}")
+     * @Rest\Get("/courses/next/{preparationId}")
      */
     public function getNextStepCourseAction(Request $request) {
 
