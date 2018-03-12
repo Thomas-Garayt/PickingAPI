@@ -2,12 +2,12 @@ AppBundle\Entity\Course\Course:
     exclusion_policy: none
     properties:
         id:
-            groups: ['course']
+            groups: ['course', 'preparation']
         preparation:
-            groups: ['course']
+            groups: ['course', 'preparation']
         productPosition:
-            groups: ['course']
+            groups: ['course', 'preparation']
         stepValidated:
-            groups: ['course']
+            groups: ['course', 'preparation']
         quantity:
-            groups: ['course']
+            groups: ['course', 'preparation']

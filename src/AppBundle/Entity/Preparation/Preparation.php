@@ -37,6 +37,11 @@ class Preparation extends EntityBase {
     private $orders;
 
     /**
+    * @ORM\OneToMany(targetEntity="AppBundle\Entity\Course\Course", mappedBy="preparation")
+    */
+    private $courses;
+
+    /**
      * Get the value of User
      *
      * @return mixed
@@ -128,6 +133,30 @@ class Preparation extends EntityBase {
     public function setOrders($orders)
     {
         $this->orders = $orders;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Courses
+     *
+     * @return mixed
+     */
+    public function getCourses()
+    {
+        return $this->courses;
+    }
+
+    /**
+     * Set the value of Courses
+     *
+     * @param mixed courses
+     *
+     * @return self
+     */
+    public function setCourses($courses)
+    {
+        $this->courses = $courses;
 
         return $this;
     }

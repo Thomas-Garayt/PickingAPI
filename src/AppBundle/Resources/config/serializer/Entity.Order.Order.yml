@@ -2,7 +2,7 @@ AppBundle\Entity\Order\Order:
     exclusion_policy: none
     properties:
         id:
-            groups: ['order']
+            groups: ['order', 'course']
         reference:
             groups: ['order']
         customer:

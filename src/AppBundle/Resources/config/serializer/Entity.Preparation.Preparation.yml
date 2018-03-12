@@ -2,7 +2,7 @@ AppBundle\Entity\Preparation\Preparation:
     exclusion_policy: none
     properties:
         id:
-            groups: ['preparation']
+            groups: ['preparation', 'course']
         user:
             groups: ['preparation']
         startTime:
@@ -10,4 +10,6 @@ AppBundle\Entity\Preparation\Preparation:
         endTime:
             groups: ['preparation']
         orders:
+            groups: ['preparation']
+        courses:
             groups: ['preparation']

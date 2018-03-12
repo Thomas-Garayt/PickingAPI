@@ -273,8 +273,12 @@ class PreparationController extends ControllerBase {
             }
         }
         // END - OTHER ORDERS
+        $c = $preparation->getCourses();
 
+
+        $em->persist($preparation);
         $em->flush();
+
         return $preparation;
     }
 
