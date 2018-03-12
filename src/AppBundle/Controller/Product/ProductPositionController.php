@@ -63,11 +63,15 @@ class ProductPositionController extends ControllerBase {
      */
     public function getGenerateProductPositionsAction(Request $request) {
 
+        $this->cleanPosition();
+
         $em = $this->getDoctrine()->getManager();
         $products = $em->getRepository(Product::class)->findBy(array(),array('weight' => 'DESC'));
 
         $emptyPositions = $em->getRepository(Position::class)->findByEmpty(true);
 
+
+        // BEGIN - SET ONE POSITION TO ALL PRODUCTS
         foreach($products as $product) {
             $weight = $product->getWeight();
 
@@ -94,6 +98,71 @@ class ProductPositionController extends ControllerBase {
             $em->persist($randPosition);
             $em->persist($newProductPosition);
         }
+        // END - SET ONE POSITION TO ALL PRODUCTS
+
+
+        // Top 50 couples
+        $topCouples = $em->getRepository(Couple::class)->findBy(array(),array('total' => 'DESC'));
+
+        foreach($topCouples as $couple) {
+            $p1 = $couple->getP1();
+            $p2 = $couple->getP2();
+
+            $positionP1 = $em->getRepository(Position::class)->findOneByProduct($p1);
+
+            $nearestPositionEmpty = $this->getNearestPositionEmpty($positionP1);
+
+            if($nearestPositionEmpty != false) {
+
+            }
+
+
+            $positionP2 = $em->getRepository(Position::class)->findOneByProduct($p2);
+
+
+        }
+
+        $em->flush();
+    }
+
+
+
+    private function getNearestPositionEmpty($position) {
+        $idPosition = $position->getId();
+
+        $minId = ($idPosition-5 > 0) ? $idPosition-5 : 1;
+        $maxId = ($idPosition+5 < 3120) ? $idPosition+5 : 3120;
+
+        for($i = $minId ; $i <= $maxId ; $i++) {
+            $position = $em->getRepository(Position::class)->findoneById($i);
+            if($position->getEmpty()) {
+                return $position;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+    * Set all position to empty
+    */
+    private function cleanPosition() {
+        $em = $this->getDoctrine()->getManager();
+
+        $allPositions = $em->getRepository(Position::class)->findAll();
+
+        foreach($allPositions as $position) {
+            $position->setEmpty(true);
+            $em->persist($position);
+        }
+        $em->flush();
+
+        $allProductPositions = $em->getRepository(ProductPosition::class)->findAll();
+
+        foreach($allProductPositions as $productPosition) {
+            $em->remove($productPosition);
+        }
+
         $em->flush();
     }
 
