@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use AppBundle\Entity\Product\ProductPosition;
 use AppBundle\Entity\Product\Product;
 use AppBundle\Entity\Position\Position;
+use AppBundle\Entity\Couple\Couple;
 
 
 class ProductPositionController extends ControllerBase {
@@ -70,7 +71,6 @@ class ProductPositionController extends ControllerBase {
 
         $emptyPositions = $em->getRepository(Position::class)->findByEmpty(true);
 
-
         // BEGIN - SET ONE POSITION TO ALL PRODUCTS
         foreach($products as $product) {
             $weight = $product->getWeight();
@@ -100,41 +100,69 @@ class ProductPositionController extends ControllerBase {
         }
         // END - SET ONE POSITION TO ALL PRODUCTS
 
+        $em->flush();
 
         // Top 50 couples
-        $topCouples = $em->getRepository(Couple::class)->findBy(array(),array('total' => 'DESC'));
+        $topCouples = $em->getRepository(Couple::class)->findBy(array(),array('total' => 'DESC'),50);
 
         foreach($topCouples as $couple) {
             $p1 = $couple->getP1();
             $p2 = $couple->getP2();
 
-            $positionP1 = $em->getRepository(Position::class)->findOneByProduct($p1);
+            $productPositionP1 = $em->getRepository(ProductPosition::class)->findOneByProduct($p1);
+            $positionP1 = $productPositionP1->getPosition();
 
             $nearestPositionEmpty = $this->getNearestPositionEmpty($positionP1);
 
             if($nearestPositionEmpty != false) {
+                // On ajoute le P2 à coté du P1
+                $nearestPositionEmpty->setEmpty(false);
+                $newProductPosition = new ProductPosition();
+                $newProductPosition->setPosition($nearestPositionEmpty);
+                $newProductPosition->setProduct($p2);
 
+                $weight = $p2->getWeight();
+                $randQuantity = $weight <= 1 ? 100 : $weight <= 5 ? 60 : $weight <= 20 ? 30 : 10;
+                $newProductPosition->setQuantity(rand(5,$randQuantity));
+
+                $em->persist($newProductPosition);
             }
+            else {
+                $productPositionP2 = $em->getRepository(ProductPosition::class)->findOneByProduct($p2);
+                $positionP2 = $productPositionP2->getPosition();
+
+                $nearestPositionEmpty = $this->getNearestPositionEmpty($positionP1);
+                if($nearestPositionEmpty != false) {
+                    // On ajoute le P1 à coté du P2
+                    $nearestPositionEmpty->setEmpty(false);
+                    $newProductPosition = new ProductPosition();
+                    $newProductPosition->setPosition($nearestPositionEmpty);
+                    $newProductPosition->setProduct($p1);
+
+                    $weight = $p1->getWeight();
+                    $randQuantity = $weight <= 1 ? 100 : $weight <= 5 ? 60 : $weight <= 20 ? 30 : 10;
+                    $newProductPosition->setQuantity(rand(5,$randQuantity));
 
 
-            $positionP2 = $em->getRepository(Position::class)->findOneByProduct($p2);
-
-
+                    $em->persist($newProductPosition);
+                }
+            }
         }
+
 
         $em->flush();
     }
 
-
-
     private function getNearestPositionEmpty($position) {
+        $em = $this->getDoctrine()->getManager();
+
         $idPosition = $position->getId();
 
         $minId = ($idPosition-5 > 0) ? $idPosition-5 : 1;
         $maxId = ($idPosition+5 < 3120) ? $idPosition+5 : 3120;
 
         for($i = $minId ; $i <= $maxId ; $i++) {
-            $position = $em->getRepository(Position::class)->findoneById($i);
+            $position = $em->getRepository(Position::class)->findOneById($i);
             if($position->getEmpty()) {
                 return $position;
             }
