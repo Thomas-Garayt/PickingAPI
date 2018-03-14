@@ -14,4 +14,4 @@ AppBundle\Entity\User:
         username:
             groups: ['user', 'auth-token']
         caracteristic:
-            groups: ['user']
+            groups: ['user', 'auth-token']

@@ -2,7 +2,7 @@ AppBundle\Entity\User\UserCaracteristic:
     exclusion_policy: none
     properties:
         id:
-            groups: ['user-caracteristic','user']
+            groups: ['user-caracteristic','user', 'auth-token']
         user:
             groups: ['user-caracteristic']
         stamina:
