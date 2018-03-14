@@ -7,6 +7,8 @@ AppBundle\Entity\User\UserCaracteristic:
             groups: ['user-caracteristic']
         stamina:
             groups: ['user-caracteristic','user']
+        currentStamina:
+            groups: ['user-caracteristic','user']
         staminaCoefficient:
             groups: ['user-caracteristic','user']
         strength:
