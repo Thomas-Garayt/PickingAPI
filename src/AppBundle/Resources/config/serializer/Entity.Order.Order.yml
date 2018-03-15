@@ -17,3 +17,5 @@ AppBundle\Entity\Order\Order:
             groups: ['order']
         weight:
             groups: ['order']
+        createdAt:
+            groups: ['order']
